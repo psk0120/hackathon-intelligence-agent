@@ -1,30 +1,31 @@
+import os
+from dotenv import load_dotenv
 from google import genai
 
-client = genai.Client(api_key="AIzaSyBJleWt6FZ6AWL3I4I4VSEtetKQGiQQShA")
+# Load environment variables
+load_dotenv()
 
-def analyze_hackathon(url):
+# Get API key safely
+API_KEY = os.getenv("GEMINI_API_KEY")
 
+if not API_KEY:
+    raise ValueError("GEMINI_API_KEY not found in .env file")
+
+# Create Gemini client
+client = genai.Client(api_key=API_KEY)
+
+
+def analyze_hackathon(url: str):
     prompt = f"""
-You are a Hackathon Intelligence Agent.
+Analyze this hackathon and extract structured information:
 
-Analyze this hackathon page:
 {url}
 
-Return JSON:
-
-{{
-"name":"",
-"organizer":"",
-"themes":"",
-"deadline":"",
-"mode":"",
-"prize":"",
-"why_join":""
-}}
+Return JSON only.
 """
 
     response = client.models.generate_content(
-        model="gemini-3-flash-preview",
+        model="gemini-1.5-flash",
         contents=prompt
     )
 
