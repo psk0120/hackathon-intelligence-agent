@@ -1,5 +1,6 @@
 from scraper import get_devpost_hackathons
 from analyzer import analyze_hackathon
+from agent import process_result, rank_opportunities
 import json
 import time
 
@@ -8,13 +9,9 @@ def main():
 
     print("\n🚀 Hackathon Intelligence Agent Starting...\n")
 
-    # STEP 1 — discover hackathons
     links = get_devpost_hackathons()
     print(f"✅ Found {len(links)} hackathons\n")
 
-    results = []
-
-    # VERY IMPORTANT FOR FREE TIER
     TEST_LIMIT = 2
 
     for i, link in enumerate(links[:TEST_LIMIT], start=1):
@@ -22,28 +19,25 @@ def main():
         print(f"\n🔎 [{i}/{TEST_LIMIT}] Analyzing:", link)
 
         try:
-            result = analyze_hackathon(link)
+            analysis = analyze_hackathon(link)
 
-            print("✅ Analysis Complete\n")
+            result = process_result(link, analysis)
 
-            results.append({
-                "url": link,
-                "analysis": result
-            })
+            print(f"⭐ Score: {result['score']}")
 
         except Exception as e:
             print("❌ Analysis failed:", e)
 
-        # Prevent Gemini rate limit
-        print("⏳ Waiting 5 seconds to avoid rate limits...\n")
+        print("⏳ Waiting 5 seconds...")
         time.sleep(5)
 
-    # STEP 3 — save intelligence
-    with open("hackathons.json", "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
+    ranked = rank_opportunities()
 
-    print("\n💾 Intelligence saved → hackathons.json")
-    print("🏁 Agent finished successfully.\n")
+    with open("ranked_hackathons.json", "w", encoding="utf-8") as f:
+        json.dump(ranked, f, indent=2, ensure_ascii=False)
+
+    print("\n🏆 Ranked opportunities saved.")
+    print("🤖 Agent finished.\n")
 
 
 if __name__ == "__main__":
