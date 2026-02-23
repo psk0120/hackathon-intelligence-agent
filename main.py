@@ -1,13 +1,10 @@
 from scraper import get_devpost_hackathons
 from analyzer import analyze_hackathon
-from agent import process_result, rank_opportunities
+from agent import process_result
+from database import already_seen, remember
 
 import json
 import time
-
-from database import already_seen, remember
-from decision import should_apply
-from notifier import notify
 
 
 def main():
@@ -20,51 +17,48 @@ def main():
 
     results = []
 
-    # Limit during testing (prevents Gemini quota burn)
+    # prevent free-tier quota burn
     TEST_LIMIT = 2
 
-    # STEP 2 — Analyze + Decide
+    # STEP 2 — Analyze + Filter
     for i, link in enumerate(links[:TEST_LIMIT], start=1):
 
-        print(f"\n🔎 [{i}/{TEST_LIMIT}] Analyzing:", link)
+        print(f"\n🔎 [{i}/{TEST_LIMIT}] Checking:", link)
 
-        # Skip already analyzed
+        # Skip already analyzed hackathons
         if already_seen(link):
-            print("⏭️ Already analyzed")
+            print("⏭ Already analyzed")
             continue
 
+        # SAFE GEMINI CALL
         try:
-            # AI Analysis
             analysis = analyze_hackathon(link)
 
-            # Agent processing
-            result = process_result(link, analysis)
-
-            # Decision engine
-            decision = should_apply(result)
-
-            # Notify user
-            notify(result, decision)
-
-            # Remember processed hackathon
-            remember(link)
-
-            results.append(result)
-
         except Exception as e:
-            print("❌ Analysis failed:", e)
+            print("⚠️ Gemini failed:", e)
+            continue
 
-        # Prevent Gemini rate limits
-        print("⏳ Waiting 5 seconds...")
-        time.sleep(5)
+        # Process + technical filtering
+        result = process_result(link, analysis)
 
-    # STEP 3 — Rank Opportunities
-    ranked = rank_opportunities()
+        if result is None:
+            print("❌ Non-technical event skipped")
+            continue
 
-    with open("ranked_hackathons.json", "w", encoding="utf-8") as f:
-        json.dump(ranked, f, indent=2, ensure_ascii=False)
+        print("✅ Technical hackathon saved")
 
-    print("\n🏆 Ranked opportunities saved.")
+        results.append(result)
+
+        remember(link)
+
+        # avoid rate limits
+        time.sleep(10)
+
+    # STEP 3 — Save structured intelligence
+    with open("filtered_hackathons.json", "w", encoding="utf-8") as f:
+        json.dump(results, f, indent=2, ensure_ascii=False)
+
+    print("\n🏆 Technical hackathons saved → filtered_hackathons.json")
     print("🤖 Agent finished.\n")
 
 

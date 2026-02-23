@@ -1,52 +1,67 @@
 import json
-from database import save_hackathon, load_all_hackathons
+from database import save_hackathon
+
+"""
+Hackathon Intelligence Agent Core
+Filters technical hackathons + structures data
+"""
+
+TECH_KEYWORDS = [
+    "ai",
+    "machine learning",
+    "software",
+    "developer",
+    "engineering",
+    "cybersecurity",
+    "hardware",
+    "robotics",
+    "blockchain",
+    "data",
+    "startup",
+    "programming",
+    "hackathon",
+    "tech"
+]
 
 
-def score_hackathon(analysis_text: str):
+def is_technical_event(analysis_text: str):
     """
-    Simple intelligence scoring system.
-    Later this becomes AI-driven.
+    Detect if hackathon is technical.
     """
-
-    score = 0
-
-    keywords = {
-        "ai": 3,
-        "startup": 2,
-        "funding": 4,
-        "remote": 3,
-        "international": 3,
-        "prize": 2,
-        "open source": 2,
-        "travel": 1
-    }
+    if not analysis_text:
+        return False
 
     text = analysis_text.lower()
 
-    for k, v in keywords.items():
-        if k in text:
-            score += v
+    for keyword in TECH_KEYWORDS:
+        if keyword in text:
+            return True
 
-    return score
+    return False
 
 
-def process_result(url, analysis):
-    score = score_hackathon(analysis)
+def process_result(link, analysis):
+    """
+    Convert AI output into structured intelligence.
+    Returns None if event is non-technical.
+    """
 
+    if analysis is None:
+        return None
+
+    # --- Technical filtering ---
+    if not is_technical_event(str(analysis)):
+        return None
+
+    # --- Structured extraction ---
     data = {
-        "url": url,
-        "analysis": analysis,
-        "score": score
+        "url": link,
+        "title": analysis.get("title"),
+        "registration_link": analysis.get("registration_link"),
+        "mode": analysis.get("mode"),
+        "deadline": analysis.get("deadline"),
+        "prize_pool": analysis.get("prize_pool"),
+        "tags": analysis.get("tags"),
     }
 
-    save_hackathon(data)
-
     return data
-
-
-def rank_opportunities():
-    hacks = load_all_hackathons()
-
-    ranked = sorted(hacks, key=lambda x: x["score"], reverse=True)
-
-    return ranked

@@ -16,19 +16,43 @@ client = genai.Client(api_key=API_KEY)
 def analyze_hackathon(url: str):
 
     prompt = f"""
-Extract structured hackathon information from this link.
+You are an autonomous Hackathon Intelligence Agent.
 
-URL: {url}
+Analyze this event page:
 
-Return JSON with:
-- name
-- deadline
-- prizes
-- eligibility
-- mode (online/offline)
-- location
+{url}
 
-Return JSON only.
+FIRST:
+Determine if this is a TECHNICAL hackathon.
+
+Include ONLY:
+- AI
+- Software
+- Engineering
+- Cybersecurity
+- Hardware
+- Innovation
+- Startup building
+
+Reject:
+- Business case competitions
+- Marketing contests
+- Quizzes
+- Non-technical events
+
+If NOT technical:
+Return:
+REJECTED
+
+If technical, extract ONLY:
+
+Hackathon Name:
+Registration Link:
+Mode (Online / Offline / Hybrid):
+Registration Deadline:
+Prize Pool (Total + Breakdown):
+
+Return clean structured data.
 """
     print("PROMPT LENGTH:", len(prompt))
     print(type(prompt))
