@@ -1,3 +1,64 @@
+# ===============================
+# Environment / Secrets
+# ===============================
 .env
+.env.*
+*.env
+
+# ===============================
+# Python cache / compiled files
+# ===============================
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.py[cod]
+
+# ===============================
+# Virtual environments
+# ===============================
+venv/
+.venv/
+env/
+ENV/
+
+# ===============================
+# OS files
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# IDE / Editor
+# ===============================
+.vscode/
+.idea/
+
+# ===============================
+# Logs & temp files
+# ===============================
+*.log
+*.tmp
+
+# ===============================
+# Generated data (Agent Output)
+# ===============================
+hackathons.json
+seen.txt
+database.db
+
+# ===============================
+# Testing / coverage
+# ===============================
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ===============================
+# Jupyter (if used later)
+# ===============================
+.ipynb_checkpoints/
+# Agent generated data
+hackathons.json
+seen.txt
+database.db
