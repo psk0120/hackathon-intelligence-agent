@@ -1,6 +1,7 @@
 requests
 beautifulsoup4
-openai
+google-generativeai
+schedule
 gspread
 google-auth
-schedule
+python-dotenv
