@@ -1,6 +1,3 @@
-import json
-from database import save_hackathon
-
 """
 Hackathon Intelligence Agent Core
 Filters technical hackathons + structures data

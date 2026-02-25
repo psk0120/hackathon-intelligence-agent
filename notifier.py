@@ -1,7 +1,12 @@
-def notify(hackathon, decision):
+def notify(result, decision):
 
-    if decision == "APPLY":
-        print(f"🔥 APPLY NOW → {hackathon['url']}")
+    if decision != "APPLY":
+        return
 
-    elif decision == "WATCH":
-        print(f"👀 Keep Watching → {hackathon['url']}")
+    print("\n🔥 NEW TECH HACKATHON FOUND 🔥")
+    print(f"Title: {result['title']}")
+    print(f"Mode: {result['mode']}")
+    print(f"Deadline: {result['deadline']}")
+    print(f"Prize Pool: {result['prize_pool']}")
+    print(f"Link: {result['url']}")
+    print("-" * 40)
